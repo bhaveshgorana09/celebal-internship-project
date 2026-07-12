@@ -172,7 +172,7 @@ Run the local production web dashboard instance by executing the following termi
 ```powershell 
 streamlit run app.py
 ```
-The application will launch immediately inside your default web browser tracking interface at http://localhost:8501[cite: 1].
+The application will launch immediately inside your default web browser tracking interface at http://localhost:8501.
 
 ---
 
@@ -202,7 +202,7 @@ python -m pytest test_main.py -v
 
 1. [EuroSAT Dataset](load_eurosat_spatial_splits(data_dir, train_ratio, val_ratio): Iterates across alphabetically sorted continuous image folders to extract geographic tracking lists, entirely preventing spatial autocorrelation leakage)
 
-2. SpatialEuroSATDataset(file_list, transform): Custom PyTorch dataset structure to apply geometric variations and color jitters to imagery during training[cite: 1].
+2. SpatialEuroSATDataset(file_list, transform): Custom PyTorch dataset structure to apply geometric variations and color jitters to imagery during training.
 
 ### Model Architecture (src/models.py)
 

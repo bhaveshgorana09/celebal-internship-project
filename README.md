@@ -24,6 +24,42 @@ A self-contained geospatial interface for uploading multi-temporal tracking tile
 
 ![Satellite Geo-Dashboard Interface](assets/Dashboard Platform.png)
 
+---
+
+## 🖼️ Project Previews & Visual Analytics
+
+### 1. Geo-Dashboard Application Interface
+The central data orchestration platform interface built with Streamlit, managing dynamic data frames, operational parameter sliders, and parallel deep-learning pipelines locally.
+
+<img src="assets/Dashboard Platform.png" alt="Geo-Dashboard Interface" width="100%" />
+
+---
+
+### 2. Multi-Temporal Target Frame Ingestion
+Sample input pairing showing a standard operational ingestion pipeline where time period $T_1$ (Before) and time period $T_2$ (After) frames are structured through identical geographical bounds.
+
+<img src="assets/T1 and T2 Frame.png" alt="Multi-Temporal Target Frames" width="100%" />
+
+---
+
+### 3. Structural Land-Use Modification Diagnostics
+Comparative visual analysis when mismatched or transformed categories are detected. The engine maps the spatial differential and highlights precise environmental variations using a structural deviation heatmap layer.
+
+#### A. Different Image Inputs (Mismatched Categories)
+<img src="assets/Different Image T1 and T2.png" alt="Different Image Input Verification" width="100%" />
+
+#### B. Resulting Anomaly Heatmap Output (Change Detected)
+<img src="assets/Change in Heatmap.png" alt="Structural Change Deviation Heatmap" width="100%" />
+
+---
+
+### 4. Steady-State Baseline Verification
+Analytical sample demonstrating system state consistency when input tracks remain structurally invariant across temporal monitoring checkpoints.
+
+<img src="assets/No change in Image.png" alt="No Change Baseline Verification" width="100%" />
+
+---
+
 
 
 

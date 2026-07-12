@@ -22,8 +22,7 @@ The system leverages deep transfer learning for robust categorical representatio
 
 A self-contained geospatial interface for uploading multi-temporal tracking tiles, reviewing category predictions, calculating vector distance indices, and rendering dynamic landscape variation heatmaps.
 
-
-![Interactive Interface](assets/Dashboard Platform.png)
+![Satellite Geo-Dashboard Interface](assets/dashboard-preview.png)
 
 
 

@@ -16,16 +16,6 @@ The system leverages deep transfer learning for robust categorical representatio
 
 ---
 
-## Project Preview
-
-### Interactive Geo-Dashboard Interface
-
-A self-contained geospatial interface for uploading multi-temporal tracking tiles, reviewing category predictions, calculating vector distance indices, and rendering dynamic landscape variation heatmaps.
-
-![Satellite Geo-Dashboard Interface](assets/Dashboard Platform.png)
-
----
-
 ## 🖼️ Project Previews & Visual Analytics
 
 ### 1. Geo-Dashboard Application Interface
@@ -42,6 +32,13 @@ Sample input pairing showing a standard operational ingestion pipeline where tim
 
 ---
 
+### 4. Steady-State Baseline Verification
+Analytical sample demonstrating system state consistency when input tracks remain structurally invariant across temporal monitoring checkpoints.
+
+<img src="assets/No change in Image.png" alt="No Change Baseline Verification" width="100%" />
+
+---
+
 ### 3. Structural Land-Use Modification Diagnostics
 Comparative visual analysis when mismatched or transformed categories are detected. The engine maps the spatial differential and highlights precise environmental variations using a structural deviation heatmap layer.
 
@@ -51,14 +48,6 @@ Comparative visual analysis when mismatched or transformed categories are detect
 #### B. Resulting Anomaly Heatmap Output (Change Detected)
 <img src="assets/Change in Heatmap.png" alt="Structural Change Deviation Heatmap" width="100%" />
 
----
-
-### 4. Steady-State Baseline Verification
-Analytical sample demonstrating system state consistency when input tracks remain structurally invariant across temporal monitoring checkpoints.
-
-<img src="assets/No change in Image.png" alt="No Change Baseline Verification" width="100%" />
-
----
 
 
 

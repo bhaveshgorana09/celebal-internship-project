@@ -22,10 +22,8 @@ The system leverages deep transfer learning for robust categorical representatio
 
 A self-contained geospatial interface for uploading multi-temporal tracking tiles, reviewing category predictions, calculating vector distance indices, and rendering dynamic landscape variation heatmaps.
 
-![Satellite Geo-Dashboard Interface](assets/dashboardpreview.png)
+![Satellite Geo-Dashboard Interface](assets/Dashboard Platform.png)
 
-https://github.com/bhaveshgorana09/celebal-internship-project/blob/main/assets/Dashboard%20Platform.png
-<img src="[https://github.com/user-attachments/assets/22c51c22-fbcd-4138-98db-561f0d8d3107](https://github.com/bhaveshgorana09/celebal-internship-project/blob/main/assets/Dashboard%20Platform.png)" alt="Power BI Dashboard Preview" width="100%" />
 
 
 

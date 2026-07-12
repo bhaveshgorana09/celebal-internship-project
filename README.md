@@ -32,14 +32,14 @@ Sample input pairing showing a standard operational ingestion pipeline where tim
 
 ---
 
-### 4. Steady-State Baseline Verification
+### 3. Steady-State Baseline Verification
 Analytical sample demonstrating system state consistency when input tracks remain structurally invariant across temporal monitoring checkpoints.
 
 <img src="assets/No change in Image.png" alt="No Change Baseline Verification" width="100%" />
 
 ---
 
-### 3. Structural Land-Use Modification Diagnostics
+### 4. Structural Land-Use Modification Diagnostics
 Comparative visual analysis when mismatched or transformed categories are detected. The engine maps the spatial differential and highlights precise environmental variations using a structural deviation heatmap layer.
 
 #### A. Different Image Inputs (Mismatched Categories)

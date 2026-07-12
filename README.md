@@ -8,11 +8,11 @@ The system leverages deep transfer learning for robust categorical representatio
 
 ## Features
 
--Geospatial Block Partitioning: Implements a robust Spatial Block Split data pipeline to process continuous geographical flight tracks, completely eliminating spatial autocorrelation and downstream validation data leakage
--Multi-Phase Optimization Floor: Establishes a highly efficient 3-layer Convolutional Neural Network baseline trained from scratch to act as a project-wide performance floor.
--Two-Phase Fine-Tuning Engine: Implements a targeted transfer learning strategy using a pre-trained ResNet-18 backbone—freezing early layers before fine-tuning the deep convolutional layers with a $10\times$ reduced learning rate.
--Embedding-Based Change Detector: Strips away the categorical classification layer to output high-fidelity 512-dimensional vector representations, applying pair-wise Cosine Similarity matrices and optimized ROC threshold cutoffs to identify landscape anomalies.
--Interactive Geo-Dashboard: Deploys a beautiful, responsive Single Page Application UI via Streamlit that supports multi-temporal dual image uploads, real-time category inference, and spatial difference heatmap masks.
+- Geospatial Block Partitioning: Implements a robust Spatial Block Split data pipeline to process continuous geographical flight tracks, completely eliminating spatial autocorrelation and downstream validation data leakage
+- Multi-Phase Optimization Floor: Establishes a highly efficient 3-layer Convolutional Neural Network baseline trained from scratch to act as a project-wide performance floor.
+- Two-Phase Fine-Tuning Engine: Implements a targeted transfer learning strategy using a pre-trained ResNet-18 backbone—freezing early layers before fine-tuning the deep convolutional layers with a $10\times$ reduced learning rate.
+- Embedding-Based Change Detector: Strips away the categorical classification layer to output high-fidelity 512-dimensional vector representations, applying pair-wise Cosine Similarity matrices and optimized ROC threshold cutoffs to identify landscape anomalies.
+- Interactive Geo-Dashboard: Deploys a beautiful, responsive Single Page Application UI via Streamlit that supports multi-temporal dual image uploads, real-time category inference, and spatial difference heatmap masks.
 
 ---
 

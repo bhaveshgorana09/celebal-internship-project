@@ -1,57 +1,52 @@
-# Quiz Backend Management API
+## Satellite Image Land-Use Classifier & Temporal Change Detector
 
-A production-grade, modular RESTful backend service built using **FastAPI**, **SQLAlchemy ORM**, **Pydantic**, and **SQLite**. 
+A production-grade, modular computer vision system built using PyTorch, Torchvision, Streamlit, and OpenCV to classify satellite imagery into land-use categories and track structural environmental variations over time.
 
-This system manages quiz questions and multiple-choice options while enforcing relational database logic, cascading deletions, runtime schema constraints, and specific application business rules. The seeded question bank is tailored to the **Celebal Technologies Python & AI/ML Internship** learning curriculum.
+The system leverages deep transfer learning for robust categorical representation alongside embedding-based distance metrics to detect macro-temporal landscape modifications without requiring dense pixel-level ground truth segmentation masks. The architecture is fully optimized for GPU acceleration, executing dynamically with absolute dependency sandboxing on local environments.
 
 ---
 
 ## Features
 
-- **REST CRUD API**: Clean, paginated endpoints for Questions and Choices with strict input sanitization (using Pydantic v2 `StringConstraints` to trim inputs and prevent whitespace-only values).
-- **Business Constraint Enforcement**: Cascades deletions, prevents duplicate choice text (case-insensitive & trimmed), restricts questions to at most one correct choice, and enforces strict logical checks for True/False structures.
-- **Shuffled Quiz Engine**: Starts unique quiz attempts on-the-fly, locks randomly selected questions dynamically, supports scoring with negative marking (-0.25 pt penalty per wrong answer), and returns question reviews showing choices, user selections, and correctness.
-- **Analytics & Leaderboard**: Provides aggregated summary metrics, lists leaderboard attempts with deterministic tie-breakers (scores, correct counts, elapsed duration), and logs hardest questions by tracking incorrect submissions.
-- **Interactive UI & Documentation**: Features a beautiful, dark-themed Single Page Application (SPA) frontend at `/ui` and auto-generated interactive documentation at `/docs`.
+-Geospatial Block Partitioning: Implements a robust Spatial Block Split data pipeline to process continuous geographical flight tracks, completely eliminating spatial autocorrelation and downstream validation data leakage
+-Multi-Phase Optimization Floor: Establishes a highly efficient 3-layer Convolutional Neural Network baseline trained from scratch to act as a project-wide performance floor.
+-Two-Phase Fine-Tuning Engine: Implements a targeted transfer learning strategy using a pre-trained ResNet-18 backbone—freezing early layers before fine-tuning the deep convolutional layers with a $10\times$ reduced learning rate.
+-Embedding-Based Change Detector: Strips away the categorical classification layer to output high-fidelity 512-dimensional vector representations, applying pair-wise Cosine Similarity matrices and optimized ROC threshold cutoffs to identify landscape anomalies.
+-Interactive Geo-Dashboard: Deploys a beautiful, responsive Single Page Application UI via Streamlit that supports multi-temporal dual image uploads, real-time category inference, and spatial difference heatmap masks.
 
 ---
 
 ## Project Preview
 
-### Interactive Quiz Interface
+### Interactive Geo-Dashboard Interface
+A self-contained geospatial interface for uploading multi-temporal tracking tiles, reviewing category predictions, calculating vector distance indices, and rendering dynamic landscape variation heatmaps.
 
-A responsive, self-contained quiz interface for selecting quiz parameters, taking quizzes, viewing scores, and reviewing answers.
 
-![Interactive Quiz Interface](assets/quiz-ui.png)
+![Interactive Quiz Interface](assets/Dashboard Platform.png)
 
-### FastAPI Swagger Documentation
-
-Interactive Swagger documentation for testing and exploring the complete REST API endpoints.
-
-![FastAPI Swagger Documentation](assets/api-docs.png)
 
 ---
 
 ## Directory Structure
 
 ```text
-quiz_api/
+satellite_change_detection/
 │
-├── assets/
-│   ├── quiz-ui.png       # Interactive Quiz UI screenshot
-│   └── api-docs.png      # Swagger API docs screenshot
-├── config.py             # App Configuration (database URL, app metadata)
-├── database.py           # SQLAlchemy engine local session setup, SQLite connection listener
-├── models.py             # SQLAlchemy ORM models (Question, Choice, QuizAttempt, QuizAttemptQuestion, AttemptAnswer)
-├── schemas.py            # Pydantic v2 validation models, pagination response, and Quiz views
-├── crud.py               # Database interaction and business-rule service layer
-├── main.py               # Application entry point, router inclusion, log middleware, health checks
-├── seed.py               # Seeding script populating 29 Celebal curriculum questions
-├── requirements.txt      # Python dependencies manifest
-├── test_main.py          # Pytest automation suite
-├── static/
-│   └── index.html        # Interactive Single Page Application Frontend
-└── README.md             # Project documentation (this file)
+├── models/
+│   └── baseline_cnn_checkpoint.pt     # Serialized PyTorch baseline weights (.pt)
+│   └── resnet18_eurosat_finetuned.pt  # Serialized fine-tuned ResNet-18 weights (.pt)
+├── notebooks/
+│   ├── 01_data_pipeline.ipynb         # Spatial block partitioning split pipeline
+│   ├── 02_baseline_cnn.ipynb          # Baseline 3-layer scratch CNN training
+│   ├── 03_transfer_learning.ipynb     # Two-phase ResNet-18 fine-tuning routine
+│   └── 04_change_detection.ipynb      # Embedding extraction and ROC cutoff tuning
+├── src/
+│   ├── __init__.py                    # Python namespace package declaration
+│   ├── dataset.py                     # Spatial dataset classes & patch loaders
+│   ├── models.py                      # Baseline CNN & Embedding Extractor networks
+│   └── utils.py                       # Cosine similarity engines & heatmap processors
+├── app.py                             # Interactive user Streamlit Geo-Dashboard
+└── requirements.txt                   # Project environment dependencies manifest
 ```
 
 ---
@@ -71,180 +66,107 @@ quiz_api/
 
 ## Database Architecture
 
-A relational structure is mapped between `questions`, `choices`, `quiz_attempts`, `quiz_attempt_questions`, and `attempt_answers` tables. SQLite connection parameters enforce referential safety constraints.
-
+The complete image land-use categorization and change detection system is built around a unified mathematical extraction engine.
 ```text
-   ┌─────────────────────────────────┐
-   │           questions             │
-   ├─────────────────────────────────┤
-   │ [PK] id            : Integer    │
-   │      question_text : String     │
-   │      category      : String(opt)│
-   │      difficulty    : String(opt)│
-   │      question_type : String     │
-   └─────────────┬─────────────┬─────┘
-                 │             │
-                 │             │ (Locks question list)
-                 ▼             ▼ 
-   ┌─────────────┴───┐   ┌─────┴──────────────────────────┐
-   │     choices     │   │     quiz_attempt_questions     │
-   ├─────────────────┤   ├────────────────────────────────┤
-   │ [PK] id         │   │ [PK] id                        │
-   │      choice_text│   │ [FK] attempt_id  : QuizAttempt │
-   │      is_correct │   │ [FK] question_id : Question    │
-   │ [FK] question_id│   └─────────────▲──────────────────┘
-   └─────────────────┘                 │
-                                       │ (1 Attempt owns Many Questions)
-                                       │
-   ┌───────────────────────────────────┴─┐
-   │            quiz_attempts            │
-   ├─────────────────────────────────────┤
-   │ [PK] id                : Integer    │
-   │      started_at        : String     │
-   │      completed_at      : String(opt)│
-   │      score             : Float(opt) │
-   │      total_questions   : Integer    │
-   │      correct_count     : Integer    │
-   │      incorrect_count   : Integer    │
-   │      skipped_count     : Integer    │
-   │      category_filter   : String(opt)│
-   │      difficulty_filter : String(opt)│
-   │      is_completed      : Boolean    │
-   └───────────────────┬─────────────────┘
-                       │
-                       │ (1 Attempt has Many Answers)
-                       ▼ (Cascade Delete)
-   ┌─────────────────────────────────────┐
-   │           attempt_answers           │
-   ├─────────────────────────────────────┤
-   │ [PK] id                : Integer    │
-   │ [FK] attempt_id        : Integer    │
-   │ [FK] question_id       : Integer    │
-   │ [FK] choice_id         : Integer    │
-   │      is_correct        : Boolean    │
-   │      marks_awarded     : Float      │
-   └─────────────────────────────────────┘
+[Time Frame T1 Tile]                  [Time Frame T2 Tile]
+           │                                     │
+           ▼                                     ▼
+┌──────────────────────┐              ┌──────────────────────┐
+│  ResNet-18 Backbone  │              │  ResNet-18 Backbone  │
+│  (Weights: EuroSAT)  │              │  (Weights: EuroSAT)  │
+└──────────┬───────────┘              └──────────┬───────────┘
+           │                                     │
+           │ (Strips Classification Head)        │ (Strips Classification Head)
+           ▼                                     ▼
+┌──────────────────────┐              ┌──────────────────────┐
+│ 512-D Latent Vector  │              │ 512-D Latent Vector  │
+│    Embedding (v1)    │              │    Embedding (v2)    │
+└──────────┬───────────┘              └──────────┬───────────┘
+           │                                     │
+           └──────────────────┬──────────────────┘
+                              │
+                              ▼
+               ┌──────────────────────────────┐
+               │    Cosine Similarity Unit    │
+               │   v1 ∙ v2 / (||v1|| ||v2||)  │
+               └──────────────┬───────────────┘
+                              │
+                              ▼
+               ┌──────────────────────────────┐
+               │   Anomaly Threshold Engine   │
+               │ Is Similarity < Cutoff (0.885)│
+               └──────────────┬───────────────┘
+                              │
+            ┌─────────────────┴─────────────────┐
+            ▼                                   ▼
+   [🔴 CHANGE DETECTED]               [🟢 SYSTEM STABLE]
+(Generates Jet Deviation Mask)       (Invariance Verified)
 ```
 
 ---
 
 ## Quick Start & Installation (Step-by-Step)
 
-Follow these steps to set up and run the project locally on Windows:
+Follow these steps to set up and execute the project locally on Windows:
 
-### 1. Open Terminal and Navigate to Project Folder
-Open PowerShell or Command Prompt and run:
-```powershell
-cd e:\celebal-internship-project
-```
+#1. Open Terminal and Navigate to Project Folder
 
-### 2. Create the Virtual Environment
-Create a clean virtual environment using the built-in python module:
-```powershell
+Open PowerShell or Command Prompt and enter your working directory path:
+
+cd D:\Celebal\satellite-change-detection
+
+#2. Create the Virtual Environment
+Initialize a clean, isolated virtual python execution environment:
+
 python -m venv venv
-```
 
-### 3. Activate the Virtual Environment
-Activate the environment to sandbox dependencies.
-* **PowerShell**:
-  ```powershell
-  venv\Scripts\Activate.ps1
-  ```
-* **Command Prompt**:
-  ```cmd
-  venv\Scripts\activate.bat
-  ```
+#3. Activate the Virtual Environment
+Activate the environment structure to sandbox code dependencies.
+-PowerShell:
+venv\Scripts\Activate.ps1
 
-*(Note: If Windows Script Execution Policy restricts activation, you can skip activation and prefix python/pip commands with `venv\Scripts\` e.g. `venv\Scripts\python -m ...`)*
+-Command Prompt:
+venv\Scripts\activate.bat
 
-### 4. Install Dependencies
-Always use `python -m pip` to target the active virtual environment python interpreter reliably:
-```powershell
+#4. Install Dependencies
+Install all necessary deep learning and visualization dependencies. Setting num_workers=0 inside the data loaders avoids multi-threading deadlocks common on Windows architectures:
+
 python -m pip install -r requirements.txt
-```
 
-### 5. Seed the Database
-Run the seeding script. It checks your existing database, performs lightweight column migrations if you have an older schema, and inserts the 29 curated question structures:
-```powershell
-python seed.py
-```
+#5. Execute Training Notebooks
 
-### 6. Launch the API Server
-Start the Uvicorn ASGI dev server as a python executable module. This bypasses PATH lookup lookup errors:
-```powershell
-python -m uvicorn main:app --reload
-```
-The console logs will confirm:
-`Uvicorn running on http://127.0.0.1:8000`
+Open your VS Code workspace editor, access the notebooks/ folder, and execute the files sequentially (01 through 04). This creates the partitioned dataset streams, evaluates the scratch CNN floor, runs the two-phase fine-tuning model, and saves the optimized network checkpoint into the models/ folder.
 
----
 
-## Running the Application
+#6. Launch the Local Geo-Dashboard App
 
-1. **API Interactive Documentation**: Visit **`http://127.0.0.1:8000/docs`** to view and test all REST routes. The Quiz UI link is also located inside the header description.
-2. **Interactive Quiz Interface**: Visit **`http://127.0.0.1:8000/ui`** in your browser. This displays the single-page application where you can customize categories, select difficulties, answer questions, submit results, and view a detailed review.
+Run the local production web dashboard instance by executing the following terminal command:
 
----
+The application will launch immediately inside your default web browser tracking interface at http://localhost:8501.
 
-## Verification & Testing
+##API & Processing Reference
 
-To run the automated test suite (isolated database tests covering system health, question limits, negative scores, and analytics):
-```powershell
-python -m pytest test_main.py -v
-```
+#Modular Data Handling (src/dataset.py)
 
----
 
-## API Reference
+-load_eurosat_spatial_splits(data_dir, train_ratio, val_ratio): Iterates across alphabetically sorted continuous image folders to extract geographic tracking lists, entirely preventing spatial autocorrelation leakage.
+-SpatialEuroSATDataset(file_list, transform): Custom PyTorch dataset structure to apply geometric variations and color jitters to imagery during training.
 
-### System Endpoints
-- **`GET /`**: Redirects to interactive documentation (`/docs`).
-- **`GET /health`**: Returns system health status.
-- **`GET /ui`**: Redirects to interactive HTML frontend.
 
-### Question Management (`/questions`)
+#Neural Networks (src/models.py)
+-FastBaselineCNN(num_classes): Lightweight 3-layer baseline CNN utilizing adaptive global downsampling to minimize the network parameter size.
+-SpatialEmbeddingExtractor(checkpoint_path, device): Reconfigures the fine-tuned ResNet-18 model by converting the final linear layer into an Identity block to generate clean 512-dimensional feature maps
 
-| Method | Endpoint | Description | Success Code | Errors |
-|:---|:---|:---|:---|:---|
-| **POST** | `/questions` | Create a new question. | `201 Created` | `422 Unprocessable` |
-| **GET** | `/questions` | List questions (paginated and filtered). | `200 OK` | - |
-| **GET** | `/questions/random`| Retrieve random set of questions. | `200 OK` | - |
-| **GET** | `/questions/{id}` | Get a question and its choices by ID. | `200 OK` | `404 Not Found` |
-| **PUT** | `/questions/{id}` | Update question text or category. | `200 OK` | `404`, `422` |
-| **DELETE**| `/questions/{id}` | Delete a question (cascades choices). | `204 No Content`| `404` |
-| **GET** | `/questions/{id}/quiz` | Get shuffled question with hidden correct answers. | `200 OK` | `404` |
 
-### Choice Management (`/choices`)
 
-| Method | Endpoint | Description | Success Code | Errors |
-|:---|:---|:---|:---|:---|
-| **POST** | `/choices` | Add a choice to a question. | `201 Created` | `400 Bad Request`, `404`, `422` |
-| **GET** | `/choices` | List choices (optional filter: `?question_id=x`). | `200 OK` | - |
-| **PUT** | `/choices/{id}` | Update choice text or correctness flag. | `200 OK` | `400`, `404`, `422` |
-| **DELETE**| `/choices/{id}` | Delete a single choice. | `204 No Content`| `404` |
+#Geoprocessing Math (src/utils.py)
+-Compute_cosine_similarity(v1, v2): Evaluates the mathematical cosine vector distance between two latent arrays to track ground transformations.
+-generate_differential_heatmap(img1, img2): Maps absolute pixel-level color variance across multi-temporal frames, producing a normalized 2D change heatmap.
 
-### Quiz Session
+##Future Enhancements
+-Multi-Spectral Ingestion Support: Upgrade the data pipeline to support 13-band Sentinel-2 multi-spectral image bands, using near-infrared (NIR) data to track crop transformations regardless of seasonal lighting changes.
+-Grad-CAM Saliency Overlay: Integrate Grad-CAM tracking directly into the dashboard interface to map and display the exact pixel clusters that drove each land-use prediction.
+-Multi-Threshold Toggle Engine: Incorporate high-precision, balanced, and high-recall cutoff switches into the app sidebar, allowing users to dynamically adjust change detection sensitivity.
+-Latent Space Embedding Maps: Project 512-dimensional land-use features into lower 2D coordinates using t-SNE or UMAP to generate side-by-side cluster visualizations for data drift verification.
 
-| Method | Endpoint | Description | Success Code | Errors |
-|:---|:---|:---|:---|:---|
-| **POST** | `/quiz/start` | Creates a new attempt with questions locked. | `201 Created` | `404 Not Found` |
-| **POST** | `/quiz/{id}/submit`| Submit answers and score the attempt. | `200 OK` | `400`, `404` |
-| **GET** | `/quiz/{id}/review`| Fetch detailed question by question feedback. | `200 OK` | `400`, `404` |
 
-### Analytics
-
-| Method | Endpoint | Description | Success Code | Errors |
-|:---|:---|:---|:---|:---|
-| **GET** | `/analytics/summary` | Get aggregated metadata on current question bank. | `200 OK` | - |
-| **GET** | `/analytics/leaderboard` | View deterministically sorted top scores. | `200 OK` | - |
-| **GET** | `/analytics/hardest-questions` | Group incorrect responses by question. | `200 OK` | - |
-
----
-
-## Future Enhancements
-
-- **User Authentication & Role-Based Access Control (RBAC)**: Integrate JWT token-based authentication to distinguish admin users (authorized to modify questions/choices) from standard students (authorized only to take quizzes).
-- **AI-Powered Question Generation**: Leverage LLMs (like Google Gemini) to dynamically generate fresh questions, choices, and detailed explanations based on selected categories and difficulty parameters.
-- **Real-Time Multiplayer Duels**: Utilize WebSockets to support real-time shared quiz rooms where multiple users answer the same set of questions under a synchronized countdown timer.
-- **Detailed Analytics per Question**: Track response latency for each individual question to report where users are spending the most time and highlight target learning paths.
-- **Rich Media & Code Highlighting**: Expand choice rendering to support code syntax highlighting (Prism.js) and embedded diagram files (Mermaid.js) within question cards.
